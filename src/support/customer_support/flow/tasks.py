@@ -7,42 +7,42 @@ from typing import Literal
 
 
 class CSTasks:
-    
     def __init__(self):
-        config_path = os.path.join(os.path.dirname(__file__), '../config', 'tasks.yaml')
-        with open(config_path, 'r', encoding='utf-8') as f:
+        config_path = os.path.join(os.path.dirname(__file__), "../config", "tasks.yaml")
+        with open(config_path, "r", encoding="utf-8") as f:
             self.config = yaml.safe_load(f)
-    
-    def order_state_task(self, agent, query, output_model):
+
+    def order_state_task(self, agent, query):
         return Task(
-            config=self.config['order_state_task'],
+            config=self.config["order_state_task"],
             agent=agent,
-            description=self.config['order_state_task']['description'].format(order_id=query),
-            output_pydantic=output_model,
-            verbose=True
+            description=self.config["order_state_task"]["description"].format(
+                order_id=query
+            ),
+            expected_output="请以JSON格式返回，包含 order_id, order_state, order_date, sender, receiver, status_desc 等字段",
+            verbose=True,
         )
-    
+
     def bmi_task(self, agent, var1, var2):
         return Task(
-            config=self.config['bmi_task'],
-            description=self.config['bmi_task']['description'].format(height=var1, weight=var2),
+            config=self.config["bmi_task"],
+            description=self.config["bmi_task"]["description"].format(
+                height=var1, weight=var2
+            ),
             output_file="bmi_report.txt",
             agent=agent,
         )
 
-    def fitness_task(self, agent, context_tasks:list, output_model):
+    def fitness_task(self, agent, context_tasks: list):
         """
         通过 context_tasks 参数，将 bmi_task 的输出作为背景信息传给健身任务
         """
         return Task(
-            config=self.config['fitness_task'],
+            config=self.config["fitness_task"],
             agent=agent,
-            description=self.config['fitness_task']['description'],
-            # 声明上下文依赖
+            description=self.config["fitness_task"]["description"],
             context=context_tasks,
             output_file="fitness_plan.md",
-            output_pydantic=output_model,
-            verbose=True
+            expected_output="请以JSON格式返回，包含 height, weight, fitness_suggestion 等字段",
+            verbose=True,
         )
-
- 
