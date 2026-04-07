@@ -1,0 +1,20 @@
+{
+  "orders": [
+    {
+      "order_id": "ORD-1001",
+      "order_state": "pending"
+    },
+    {
+      "order_id": "ORD-1002",
+      "order_state": "processing"
+    },
+    {
+      "order_id": "ORD-1003",
+      "order_state": "completed"
+    },
+    {
+      "order_id": "ORD-1004",
+      "order_state": "cancelled"
+    }
+  ]
+}

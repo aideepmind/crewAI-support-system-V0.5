@@ -1,0 +1,7 @@
+transaction_count_query_task:
+  description: >
+    根据机构名称信息{org_name}和时间范围{duration}，查询这个机构在最近时间范围周期内的交易数量。
+    输入示例：机构名称 "XX银行"，时间范围 "月"，查询"XX银行最近一个月内的交易量"。
+    输入示例：机构名称 "XX公司"，时间范围 "周"，查询"XX公司最近一周内的交易量"。
+  expected_output: "给出明确的交易数量，格式为：<交易数量>：xxx"
+

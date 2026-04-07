@@ -1,0 +1,43 @@
+order_state_task:
+  description: |
+    你作为业务支持专家，负责根据用户提供的订单号查询订单状态并提供相关信息。
+    根据输入的订单号"{order_id}"请严格按照以下逻辑处理：
+    在如下 JSON 数据中查询 "{order_id}" 对应的 "order_state"，并返回给用户。
+    
+    json格式数据内容如下:
+    {{
+      "orders": [
+        {{"order_id":"11111111","order_state":"pending"}},
+        {{"order_id":"22222222","order_state":"processing"}},
+        {{"order_id":"33333333","order_state":"completed"}},
+        {{"order_id":"44444444","order_state":"cancelled"}}
+      ]
+    }}
+    注意严格遵守如下规则：
+    1. 输出简洁明了，包含输入订单号匹配的订单状态信息,不要包含意图识别信息。
+    2. 输出格式必须为 JSON 对象，包含 "order_id" 和 "order_state" 两个字段。
+    3. 如果订单号未找到，返回 "order_id": "{order_id}", "order_state": "not found"。
+   
+  expected_output: >
+    一个符合 Pydantic 结构的 JSON 对象，包含 "order_id" 和 "order_state"。
+
+bmi_task:
+  description: |
+    根据输入的身高 "{height}" 和体重 "{weight}" 数据，评估 BMI 并得出结果。
+    评估结果应包括：非常健康、健康、亚健康、不健康等。
+
+  expected_output: "给出明确的评估结果，格式为：<评估结果>：xxx"
+
+fitness_task:
+  description: |
+    根据用户提供的存储在"{slots}" 中的数据身高,体重，结合上一步的健康评估结果，
+    分析上一步的健康评估结果，并提供至少三条针对性的健身建议。
+  expected_output: 
+    一个符合 Pydantic 结构的 JSON 对象，包含 "height", "weight" 和 "fitness_suggestion" 三个字段。"
+
+fault_diagnosis:
+  description: |
+    根据用户提供的存储在{slots}中的故障现象，
+    进行专业的故障诊断并给出解决方案，或者给出就定位问题进一步询问用户的问题。
+  expected_output: 
+     一个符合 Pydantic 结构的 JSON 对象，包含 "fault_result" 一个字段。"

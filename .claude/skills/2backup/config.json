@@ -1,0 +1,7 @@
+{
+  "name": "2backup",
+  "env_vars": {
+    "LYS_BACKUP_DIR": "/Users/liyansheng/data/backup"
+  },
+  "description": "Backup current project code and configuration data to a zip file."
+}

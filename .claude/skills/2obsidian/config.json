@@ -1,0 +1,7 @@
+{
+  "name": "2-skill-config",
+  "env_vars": {
+    "OBSIDIAN_LYS_DIR": "/Users/liyansheng/data/Obsidian-lys"
+  },
+  "description": "This directory is the primary data source for the 2obsidian skill."
+}

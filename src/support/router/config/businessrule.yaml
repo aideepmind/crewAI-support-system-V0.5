@@ -1,0 +1,31 @@
+# config/business_rules.yaml
+
+order_state:
+  required_slots:
+    order_id: "为了查询进度，请提供您的【订单号】（通常是8位数字）。"
+  # 通用提示
+  missing_prompt: "为了帮您查询进度，请提供您的【订单号】（通常是8位数字）。"
+
+transaction_count_query:
+  required_slots:
+    org_name: "请输入您想查询的【机构名称】（例如：XX银行或XX公司）。"
+    duration: "请输入您想查询的【日期范围】（例如：月或年）。"
+  missing_prompt: "为了查询订单量，请提供您想查询的【日期范围】（例如：月或年）。"
+
+fitness_consulting:
+  required_slots:
+    height: "输入您的身高（单位：cm），以便计算 BMI。"
+    weight: "输入您的体重（单位：kg），以便计算 BMI。"
+  missing_prompt: "计算 BMI 需要您的身高和体重信息，请问您的【身高(cm)】和【体重(kg)】是多少？"
+
+fault_diagnosis:
+  required_slots:
+    symptom: "请输入您的【问题现象描述】（例如：程序运行经常死机等）。"
+  missing_prompt: "为了帮您进一步分析问题，请提供您的【问题现象描述】。"
+
+
+tech_support:
+  required_slots:
+    device_type: "请输入您的【设备型号】。"
+    issue_description: "请简要描述您的【故障现象】。"
+  missing_prompt: "为了精准解决问题，请告知您的【设备型号】并简要描述您的【故障现象】。"

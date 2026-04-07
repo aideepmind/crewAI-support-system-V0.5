@@ -1,0 +1,19 @@
+[project]
+name = "job_posting"
+version = "0.1.0"
+description = ""
+authors = [{name = "Your Name", email = "you@example.com"}]
+readme = "README.md"
+requires-python = ">=3.12,<=3.13"
+dependencies = [
+    "crewai[tools]>=0.152.0",
+    "duckduckgo-search>=8.1.1",
+    "fastapi>=0.116.1",
+    "python-decouple>=3.8",
+    "python-dotenv>=1.0.1",
+    "pyyaml>=6.0.2",
+]
+
+[project.scripts]
+job_posting = "job_posting.main:run"
+train = "job_posting.main:train"

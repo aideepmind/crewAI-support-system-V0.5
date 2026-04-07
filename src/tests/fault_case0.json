@@ -1,0 +1,15 @@
+{
+  "case_id": "2025-08-18-0001",
+  "device": {"brand": "X", "series": "A700", "fw": "v3.2"},
+  "env": {"voltage": 380, "phase": 3, "ambient_temp": 42},
+  "symptom_text": "提示内存溢出",
+  "symptoms_all": ["程序运行一段时间变慢","程序运行崩溃","提示内存溢出","程序运行启动失败","程序运行失败"],
+  "symptoms_share": ["程序运行崩溃","提示内存溢出","程序运行失败"],
+  "candidates": [
+    {"fault_id": "f002","fault": "程序使用内存超出系统上限","prior": 0.6},
+    {"fault_id": "f001","fault": "程序内存泄漏","prior": 0.4}
+  ],
+  "asked": [],
+  "next_question": [], 
+  "stop": false
+}

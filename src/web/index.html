@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Test Interface</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000000;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 5px;
+            flex-shrink: 0;
+        }
+        
+        #user-select {
+            background-color: #111111;
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 5px;
+            font-size: 14px;
+            min-width: 100px;
+        }
+        
+        #new-chat-btn {
+            background-color: #111111;
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        #new-chat-btn:hover {
+            background-color: #00FF00;
+            color: #000000;
+        }
+        
+        #main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        #chat-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        #chat-window {
+            flex: 2;
+            background-color: #111111;
+            border: 1px solid #00FF00;
+            padding: 10px;
+            overflow-y: auto;
+            margin-right: 10px;
+        }
+        
+        #debug-window {
+            flex: 1;
+            background-color: #111111;
+            border: 1px solid #00FF00;
+            padding: 10px;
+            overflow-y: auto;
+            min-width: 250px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            max-width: 80%;
+            position: relative;
+        }
+        
+        .user-message {
+            background-color: #003300;
+            color: #00FF00; /* 绿色文字 */
+            text-align: right;
+            margin-left: 20%;
+            border: 1px solid #00FF00;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+        }
+        
+        .bot-message {
+            background-color: #331100;
+            color: #FFA500; /* 橙色文字 */
+            text-align: left;
+            margin-right: 20%;
+            border: 1px solid #FFA500;
+            box-shadow: 0 0 5px rgba(255, 165, 0, 0.3);
+        }
+        
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+        
+        #input-container {
+            display: flex;
+            padding: 0 5px;
+            flex-shrink: 0;
+            height: 50px;
+        }
+        
+        #user-input {
+            flex: 1;
+            background-color: #111111;
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 8px 12px;
+            font-size: 14px;
+            resize: none;
+            line-height: 1.4;
+            margin-right: 10px;
+        }
+        
+        #user-input:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        
+        #send-btn {
+            background-color: #111111;
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            height: 34px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        #send-btn:hover {
+            background-color: #00FF00;
+            color: #000000;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        #send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        #debug-content {
+            white-space: pre-wrap;
+            font-size: 12px;
+            color: #00FF00;
+        }
+        
+        #debug-window h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #00FF00;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #111111;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #00FF00;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00CC00;
+        }
+        
+        /* 确保输入框始终可见 */
+        #input-container {
+            position: relative;
+            z-index: 10;
+        }
+        
+        @media (max-height: 600px) {
+            #chat-container {
+                margin-bottom: 5px;
+            }
+            
+            #input-container {
+                height: 45px;
+            }
+            
+            #user-input {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            
+            #send-btn {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <select id="user-select">
+            <option value="user1">User 1</option>
+            <option value="user2">User 2</option>
+            <option value="user3">User 3</option>
+            <option value="user4">User 4</option>
+            <option value="user5">User 5</option>
+        </select>
+        <button id="new-chat-btn">New Chat</button>
+    </div>
+    
+    <div id="main-container">
+        <div id="chat-container">
+            <div id="chat-window"></div>
+            <div id="debug-window">
+                <h3>Debug Info</h3>
+                <div id="debug-content">等待后端响应...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="input-container">
+        <input type="text" id="user-input" placeholder="输入消息... (Enter 发送)">
+        <button id="send-btn">发送</button>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const debugContent = document.getElementById('debug-content');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const userSelect = document.getElementById('user-select');
+        const newChatBtn = document.getElementById('new-chat-btn');
+
+        let currentUser = userSelect.value;
+        let chatHistory = {}; // Store history per user
+
+        // 自动调整聊天窗口高度
+        function adjustLayout() {
+            chatWindow.style.height = (window.innerHeight - 180) + 'px';
+        }
+
+        userSelect.addEventListener('change', () => {
+            currentUser = userSelect.value;
+            loadChatHistory();
+        });
+
+        newChatBtn.addEventListener('click', () => {
+            chatHistory[currentUser] = [];
+            chatWindow.innerHTML = '<div style="text-align: center; color: #666;">新对话已开始</div>';
+            debugContent.innerHTML = '新对话 - 等待后端响应...';
+        });
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 窗口大小变化时调整布局
+        window.addEventListener('resize', adjustLayout);
+        adjustLayout();
+
+        function loadChatHistory() {
+            if (!chatHistory[currentUser]) chatHistory[currentUser] = [];
+            chatWindow.innerHTML = '';
+            if (chatHistory[currentUser].length === 0) {
+                chatWindow.innerHTML = '<div style="text-align: center; color: #666;">选择用户后开始对话</div>';
+            } else {
+                chatHistory[currentUser].forEach(msg => {
+                    addMessage(msg.type, msg.content, msg.timestamp);
+                });
+            }
+            debugContent.innerHTML = '加载用户 ' + currentUser + ' 的调试信息...';
+        }
+
+        function addMessage(type, content, timestamp = null) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', type === 'user' ? 'user-message' : 'bot-message');
+            msgDiv.innerHTML = `
+                <div>${content}</div>
+                ${timestamp ? `<div class="message-time">${timestamp}</div>` : ''}
+            `;
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            
+            // 如果是新对话的第一条消息，清除欢迎信息
+            const welcomeMsg = chatWindow.querySelector('div[style*="text-align: center"]');
+            if (welcomeMsg) welcomeMsg.remove();
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // 禁用发送按钮防止重复提交
+            sendBtn.disabled = true;
+            sendBtn.textContent = '发送中...';
+            userInput.disabled = true;
+
+            const timestamp = new Date().toLocaleTimeString();
+            addMessage('user', message, timestamp);
+            chatHistory[currentUser].push({ 
+                type: 'user', 
+                content: message, 
+                timestamp: timestamp 
+            });
+
+            userInput.value = '';
+
+            try {
+                const response = await fetch('http://localhost:8001/chat', { // Replace with your backend endpoint
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: currentUser, message })
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+                const data = await response.json();
+                
+                const botTimestamp = new Date().toLocaleTimeString();
+                
+                if (data.response) {
+                    addMessage('bot', data.response.message, botTimestamp);
+                    chatHistory[currentUser].push({ 
+                        type: 'bot', 
+                        content: data.response, 
+                        timestamp: botTimestamp 
+                    });
+                } else {
+                    addMessage('bot', '后端返回了空响应', botTimestamp);
+                }
+
+                // Display debug info
+                if (data.debug) {
+                    debugContent.innerHTML = JSON.stringify(data.debug, null, 2);
+                } else {
+                    debugContent.innerHTML = '无调试信息返回';
+                }
+                
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                const errorTimestamp = new Date().toLocaleTimeString();
+                addMessage('bot', `错误: ${error.message}`, errorTimestamp);
+                debugContent.innerHTML = `错误详情: ${error.message}\n${error.stack || '无堆栈信息'}`;
+            } finally {
+                // 恢复发送按钮
+                sendBtn.disabled = false;
+                sendBtn.textContent = '发送';
+                userInput.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        // 页面加载时聚焦输入框
+        window.addEventListener('load', () => {
+            userInput.focus();
+            loadChatHistory();
+        });
+
+        // Initial load
+        loadChatHistory();
+    </script>
+</body>
+</html>

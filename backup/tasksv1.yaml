@@ -1,0 +1,81 @@
+routing_task:
+  description: >
+    你的任务是分析用户当前输入内容："{query}"。
+    系统当前已知的上下文信息（槽位）是: {current_slots}。
+    之前的意图是： {current_intent}。
+    请结合已有信息和最新输入，准确识别用户的意图并提取缺少的字段。
+    如果用户输入非常简练（例如：对于“健康评估”的意图只提供了部分信息，例如只提供了身高height），请结合“历史槽位信息”和“之前的识别意图”进行判断
+    如果用户是在补全之前缺失的信息，请保持原有的意图不变。
+    如果用户提供了新的信息，请更新对应的字段。
+    只有当用户明确提出了全新的请求时，才修改意图。
+    请严格按照以下逻辑处理：
+
+    1. **意图识别**：
+       - 如果用户询问订单的状态，这里的订单是抵押业务订单，意图为 "order_state"。
+       - 如果用户提到进行健康评估、健康咨询，健身建议等，意图为 "fitness_consulting"。
+       - 如果用户提到设备故障诊断、故障分析，报错分析或技术问题咨询，意图为 "fault_diagnosis"。
+       - 如果用户提到设备故障、报错或技术咨询，意图为 "tech_support"。
+       - 如果用户提到业务量查询或订单量查询，意图为 "transaction_count_query"。
+       - 其他无法确定的情况，意图为 "unknown"。
+       
+    2. **槽位提取 (Slots)**：
+       - 对于 "order_state" 意图，必须寻找并提取订单号 'order_id'。
+       - 对于 "fitness_consulting" 意图，提取体重:'weight',提取身高:'height'。
+       - 对于 "fault_diagnosis" 意图，提取故障现象'symptom'。
+       - 对于 "tech_support" 意图，提取 'device_type' 和 'issue_summary'。
+       - 对于 "transaction_count_query" 意图，提取 'org_name' 和 'duration'。
+       
+    3. **完整性检查**：
+       - 对于 "order_state" 意图，检查核心槽位（如 order_id）是否在文中明确给出。
+       - 对于 "fitness_consulting" 意图，检查核心槽位（如 weight, height）是否在文中明确给出，体重weight需要要大于0，身高height需要大于0。
+       - 对于 "fault_diagnosis" 意图，检查核心槽位（如 symptom）是否在文中明确给出。
+       - 对以每个不同的意图，如果给出了需要的核心槽位，设置 'is_complete' 为 true；否则为 false。
+
+    4. **其他输入**：
+       - 对于 "fault_diagnosis" 意图，除了用户给出的故障现象'symptom'以外，其他输入作为 'user_response' 返回。
+
+  
+  expected_output: >
+    识别出的意图名称及提取到的字段信息，以 JSON 格式返回
+    -个符合 Pydantic 结构的 JSON 对象，包含 intent, slots, is_complete 和 explanation。
+    -对于 "fault_diagnosis" 意图,除了返回意图名称和提取到的字段信息外，还需要返回用户给出的'user_response'。
+   
+    ### 对于 "order_state" 意图，示例 1
+    输入: "我的订单号是 12345，状态怎样。"
+    输出: {{"intent": "order_state", "slots": {{"order_id": "12345"}}, "is_complete": true, "explanation": "用户提供了订单号并询问状态"}}
+    
+    ### 对于 "order_state" 意图，示例 2
+    输入: "查询抵押业务，但我不记得单号了。"
+    输出: {{"intent": "order_state", "slots": {{}}, "is_complete": false, "explanation": "意图明确但缺少核心单号"}}
+    
+    ### 对于 "order_state" 意图，示例 3
+    输入: "单号查询122233。"
+    输出: {{"intent": "order_state", "slots": {{"order_id": "122233"}}, "is_complete": true, "explanation": "用户提供了订单号并询问状态"}}
+    
+    ### 对于 "order_state" 意图，示例 4
+    输入: "业务查询122233。"
+    输出: {{"intent": "order_state", "slots": {{"order_id": "122233"}}, "is_complete": true, "explanation": "用户提供了订单号并询问状态"}}
+    
+    ### 对于 "fitness_consulting" 意图，示例 1
+    输入："我的体重是 70 公斤，身高是 180 厘米，请帮我计算一下 BMI。"
+    输出：{{"intent": "fitness_consulting", "slots": {{"weight": 70, "high": 180}}, "is_complete": true, "explanation": "用户提供了体重和身高信息"}}
+    
+    ### 对于 "fitness_consulting" 意图，示例 2
+    输入："我最近在健身，想了解一些健身建议。"
+    输出：{{"intent": "fitness_consulting", "slots": {{}}, "is_complete": false, "explanation": "用户表达了健身咨询需求，但未提供具体的身体数据"}}
+    
+    ### 对于 "fitness_consulting" 意图，示例 3
+    输入："我的体重是 70 公斤，给我点健康方面的建议。"
+    输出：{{"intent": "fitness_consulting", "slots": {{"weight": 70}}, "is_complete": false, "explanation": "用户给出了体重，但是没有给身高信息"}}
+    
+    ###  对于 "fault_diagnosis" 意图，示例 1
+    输入: "诊断故障，现象：系统经常出现异常并死机。"
+    输出: {{"intent": "fault_diagnosis", "slots": {{"symptom": "系统经常出现异常并死机"}}, "is_complete": true, "explanation": "用户提供了故障现象并希望诊断原因"}}
+    
+    ###  对于 "fault_diagnosis" 意图，示例 2
+    输入: "是的。"
+    输出: {{"intent": "fault_diagnosis", "slots": {{"symptom": "系统经常出现异常并死机","user_response": "yes"}}, "is_complete": true, "explanation": "用户确认答案是 'yes'"}}
+    
+
+    ### 当前任务
+    输入: "{query}"
